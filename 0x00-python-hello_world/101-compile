@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 $PYFILE > my_main.pyc
+python3 -c $PYFILE
