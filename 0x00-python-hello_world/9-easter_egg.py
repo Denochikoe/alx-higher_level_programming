@@ -7,5 +7,4 @@ if index != -1:
     english_part = zen_of_python[:index].strip()
 else:
     english_part = zen_of_python.strip()
-normalized_text = '\n'.join(line.strip() for line in english_part.splitlines() if line.strip())
-print(normalized_text, end='')
+print(english_part, end='')
