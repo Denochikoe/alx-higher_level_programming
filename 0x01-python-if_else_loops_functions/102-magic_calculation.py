@@ -1,3 +1,5 @@
+import dis
+
 def calculate(a, b, c):
     if a < b:
         return c
@@ -5,3 +7,5 @@ def calculate(a, b, c):
         return a + b
     else:
         return a * b - c
+
+dis.dis(calculate)
