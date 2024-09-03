@@ -1,6 +1,6 @@
 import dis
 
-def calculate(a, b, c):
+def magic_calculation(a, b, c):
     if a < b:
         return c
     elif c < b:
@@ -8,4 +8,4 @@ def calculate(a, b, c):
     else:
         return a * b - c
 
-dis.dis(calculate)
+dis.dis(magic_calculation)
