@@ -16,7 +16,8 @@ def main():
     # Get all names defined in the module
     names = dir(hidden_module)
 
-    filtered_names = sorted(name for name in names if not name.startswith("__"))
+    filtered_names = sorted(name for name in
+                            names if not name.startswith("__"))
 
     # Print each name on a new line
     for name in filtered_names:
