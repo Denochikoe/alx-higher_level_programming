@@ -2,6 +2,7 @@
 import importlib.util
 import inspect
 
+
 def main():
     # Load the compiled module hidden_4.pyc
     module_name = "hidden_4"
@@ -15,12 +16,12 @@ def main():
     # Get all names defined in the module
     names = dir(hidden_module)
 
-    # Filter names that do not start with '__' and sort them alphabetically
     filtered_names = sorted(name for name in names if not name.startswith("__"))
 
     # Print each name on a new line
     for name in filtered_names:
         print(name)
+
 
 # Ensure the code only runs when executed directly
 if __name__ == "__main__":
