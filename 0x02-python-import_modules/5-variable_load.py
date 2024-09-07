@@ -10,4 +10,3 @@ def main():
 # Ensure the code only runs when executed directly
 if __name__ == "__main__":
     main()
-
