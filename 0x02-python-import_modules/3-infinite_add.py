@@ -4,7 +4,7 @@ import sys
 
 def main():
     args = sys.argv[1:]
-    total = sum(int(arg) for arg in args) 
+    total = sum(int(arg) for arg in args)
     # Print the result
     print(total)
 
