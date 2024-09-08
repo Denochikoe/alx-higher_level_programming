@@ -9,7 +9,6 @@ def print_matrix_integer(matrix=[[]]):
 
         # Iterate through each element in the row
         for element in row:
-            # Format each integer using str.format() and append it to the formatted row list
             formatted_row.append("{:d}".format(element))
 
         # Join the formatted elements with a space and print the row
