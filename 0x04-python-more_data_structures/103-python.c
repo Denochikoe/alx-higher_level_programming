@@ -60,7 +60,7 @@ void print_python_bytes(PyObject *p)
     /* Verify if p is a bytes object */
     if (!PyBytes_Check(p))
     {
-        printf("[ERROR] Invalid Bytes Object\n");
+        printf("  [ERROR] Invalid Bytes Object\n");  /* Added a space before the error message */
         return;
     }
 
