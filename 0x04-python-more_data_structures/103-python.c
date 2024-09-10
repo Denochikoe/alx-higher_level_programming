@@ -54,6 +54,9 @@ void print_python_bytes(PyObject *p)
     Py_ssize_t size, i;
     char *str;
 
+    /* Print the initial info even if it's not a valid bytes object */
+    printf("[.] bytes object info\n");
+
     /* Verify if p is a bytes object */
     if (!PyBytes_Check(p))
     {
@@ -65,7 +68,6 @@ void print_python_bytes(PyObject *p)
     size = ((PyVarObject *)p)->ob_size;  /* Access size directly */
     str = ((PyBytesObject *)p)->ob_sval;  /* Access the string representation */
 
-    printf("[.] bytes object info\n");
     printf("  size: %zd\n", size);
     printf("  trying string: %.*s\n", (int)size, str);
 
