@@ -66,8 +66,9 @@ void print_python_bytes(PyObject *p)
     printf("  size: %zd\n", size);
     printf("  trying string: %.*s\n", (int)size, str);
 
-    printf("  first %zd bytes: ", (size < 10) ? size : 10);
-    for (i = 0; i < ((size < 10) ? size : 10); i++)
+    /* Print the first 6 bytes, including the null terminator if present */
+    printf("  first %zd bytes: ", (size < 10) ? size + 1 : 10);
+    for (i = 0; i < ((size < 10) ? size + 1 : 10); i++)
     {
         printf("%02x ", (unsigned char)str[i]);
     }
