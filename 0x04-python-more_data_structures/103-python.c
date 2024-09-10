@@ -11,29 +11,30 @@ void print_python_list(PyObject *p);
  */
 void print_python_list(PyObject *p)
 {
-    Py_ssize_t i;
+    Py_ssize_t i, size;
     PyObject *item;
-    Py_ssize_t size;
-    
+    PyListObject *list_object;
+
+    /* Verify if p is a list */
     if (!PyList_Check(p))
     {
         printf("[ERROR] Invalid List Object\n");
         return;
     }
 
-    size = PyList_Size(p);  /* Getting size of the list */
-    printf("[*] Size of the Python List = %zd\n", size);
-    printf("[*] Allocated = %zd\n", ((PyListObject *)p)->allocated);
+    /* Retrieve size of the list and list internals */
+    size = ((PyVarObject *)p)->ob_size;  /* Direct access to list size */
+    list_object = (PyListObject *)p;  /* Accessing the list object structure */
 
+    printf("[*] Size of the Python List = %zd\n", size);
+    printf("[*] Allocated = %zd\n", list_object->allocated);
+
+    /* Loop through the list items */
     for (i = 0; i < size; i++)
     {
-        item = PyList_GetItem(p, i);  /* Getting item from the list */
-        if (item == NULL)
-        {
-            printf("Element %zd: [ERROR] Could not retrieve item\n", i);
-            continue;
-        }
-        printf("Element %zd: %s\n", i, Py_TYPE(item)->tp_name);
+        item = list_object->ob_item[i];  /* Direct access to list elements */
+        printf("Element %zd: %s\n", i, item->ob_type->tp_name);  /* Type of the object */
+
         if (PyBytes_Check(item))
         {
             print_python_bytes(item);
@@ -47,18 +48,19 @@ void print_python_list(PyObject *p)
  */
 void print_python_bytes(PyObject *p)
 {
-    Py_ssize_t size;
-    Py_ssize_t i;
-    const char *str;
+    Py_ssize_t size, i;
+    char *str;
 
+    /* Verify if p is a bytes object */
     if (!PyBytes_Check(p))
     {
         printf("[ERROR] Invalid Bytes Object\n");
         return;
     }
 
-    size = PyBytes_Size(p);  /* Getting size of the bytes object */
-    str = PyBytes_AsString(p);  /* Getting the string of the bytes object */
+    /* Directly access bytes internals */
+    size = ((PyVarObject *)p)->ob_size;  /* Access size directly */
+    str = ((PyBytesObject *)p)->ob_sval;  /* Access the string representation */
 
     printf("[.] bytes object info\n");
     printf("  size: %zd\n", size);
