@@ -14,7 +14,6 @@ void print_python_list(PyObject *p)
     Py_ssize_t i;
     PyObject *item;
     Py_ssize_t size;
-    PyObject *list;
     
     if (!PyList_Check(p))
     {
@@ -22,15 +21,13 @@ void print_python_list(PyObject *p)
         return;
     }
 
-    list = p;
-    size = PyList_Size(list);
-
+    size = PyList_Size(p);  /* Getting size of the list */
     printf("[*] Size of the Python List = %zd\n", size);
-    printf("[*] Allocated = %zd\n", ((PyListObject *)list)->allocated);
+    printf("[*] Allocated = %zd\n", ((PyListObject *)p)->allocated);
 
     for (i = 0; i < size; i++)
     {
-        item = PyList_GetItem(list, i);
+        item = PyList_GetItem(p, i);  /* Getting item from the list */
         if (item == NULL)
         {
             printf("Element %zd: [ERROR] Could not retrieve item\n", i);
@@ -60,12 +57,12 @@ void print_python_bytes(PyObject *p)
         return;
     }
 
-    size = PyBytes_Size(p);
-    str = PyBytes_AsString(p);
+    size = PyBytes_Size(p);  /* Getting size of the bytes object */
+    str = PyBytes_AsString(p);  /* Getting the string of the bytes object */
 
     printf("[.] bytes object info\n");
     printf("  size: %zd\n", size);
-    printf("  trying string: %s\n", (size < 10) ? str : "Error: String too long");
+    printf("  trying string: %.*s\n", (int)size, str);
 
     printf("  first %zd bytes: ", (size < 10) ? size : 10);
     for (i = 0; i < ((size < 10) ? size : 10); i++)
