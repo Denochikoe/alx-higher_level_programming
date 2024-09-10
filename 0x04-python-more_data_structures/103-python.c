@@ -70,7 +70,9 @@ void print_python_bytes(PyObject *p)
     printf("  first %zd bytes: ", (size < 10) ? size + 1 : 10);
     for (i = 0; i < ((size < 10) ? size + 1 : 10); i++)
     {
-        printf("%02x ", (unsigned char)str[i]);
+        printf("%02x", (unsigned char)str[i]);
+        if (i < ((size < 10) ? size : 9))
+            printf(" ");  /* Add space between bytes, but not after the last byte */
     }
     printf("\n");
 }
