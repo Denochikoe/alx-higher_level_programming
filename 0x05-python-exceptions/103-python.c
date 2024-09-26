@@ -70,8 +70,11 @@ void print_python_float(PyObject *p)
     /* Get the value of the float */
     value = ((PyFloatObject *)p)->ob_fval;
 
-    /* Print the float value */
-    printf("  value: %.16g\n", value);
+    /* Print the float value with one decimal place for integer-like floats */
+    if (value == (int)value)
+        printf("  value: %.1f\n", value);  /* Ensure decimal point for integer-like floats */
+    else
+        printf("  value: %.16g\n", value); /* Use 16 significant digits for non-integer floats */
 }
 
 /**
