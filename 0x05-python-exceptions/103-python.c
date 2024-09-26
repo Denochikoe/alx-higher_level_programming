@@ -35,7 +35,6 @@ void print_python_bytes(PyObject *p)
     /* Print the first 10 bytes or fewer */
     printf("  first %zd bytes:", size >= 10 ? 10 : size + 1);
 
-    /* Print up to the first 9 bytes if available */
     for (i = 0; i < size && i < 10; i++)
     {
         printf(" %02x", (unsigned char)str[i]);
@@ -71,10 +70,7 @@ void print_python_float(PyObject *p)
     value = ((PyFloatObject *)p)->ob_fval;
 
     /* Print the float value with one decimal place for integer-like floats */
-    if (value == (int)value)
-        printf("  value: %.1f\n", value);  /* Ensure decimal point for integer-like floats */
-    else
-        printf("  value: %.16g\n", value); /* Use 16 significant digits for non-integer floats */
+    printf("  value: %.17g\n", value);  /* Display up to 17 significant digits */
 }
 
 /**
