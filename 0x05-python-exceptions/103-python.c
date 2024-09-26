@@ -18,23 +18,21 @@ void print_python_list(PyObject *p)
         return;
     }
 
-    size = ((PyVarObject *)p)->ob_size; // Size of the list
-    allocated = ((PyListObject *)p)->allocated; // Allocated size
+    size = ((PyVarObject *)p)->ob_size;
+    allocated = ((PyListObject *)p)->allocated;
 
     printf("[*] Size of the Python List = %zd\n", size);
     printf("[*] Allocated = %zd\n", allocated);
 
     for (i = 0; i < size; i++)
     {
-        item = PyList_GetItem(p, i); // Get the item safely
-        printf("Element %zd: %s\n", i, Py_TYPE(item)->tp_name); // Get the type name
-
+        item = ((PyListObject *)p)->ob_item[i];
+        printf("Element %zd: %s\n", i, ((PyObject *)(item))->ob_type->tp_name);
+        
         if (PyBytes_Check(item))
             print_python_bytes(item);
         else if (PyFloat_Check(item))
             print_python_float(item);
-        else
-            printf("Element %zd: [ERROR] Unsupported type\n", i);
     }
 }
 
@@ -51,14 +49,14 @@ void print_python_bytes(PyObject *p)
         return;
     }
 
-    size = PyBytes_Size(p); // Get size of the bytes object
-    str = PyBytes_AsString(p); // Get the string representation
+    size = ((PyVarObject *)p)->ob_size;
+    str = ((PyBytesObject *)p)->ob_sval;
 
     printf("  size: %zd\n", size);
-    printf("  trying string: %s\n", str ? str : "(null)");
+    printf("  trying string: %s\n", str);
 
-    printf("  first %zd bytes:", size > 10 ? 10 : size);
-    for (i = 0; i < (size > 10 ? 10 : size); i++)
+    printf("  first %zd bytes:", size > 10 ? 10 : size + 1);
+    for (i = 0; i < (size > 10 ? 10 : size + 1); i++)
     {
         printf(" %02x", (unsigned char)str[i]);
     }
@@ -77,7 +75,7 @@ void print_python_float(PyObject *p)
         return;
     }
 
-    value = PyFloat_AsDouble(p); // Get the double value from the float object
-    printf("  value: %.12g\n", value); // Print with precision
-}
+    value = ((PyFloatObject *)p)->ob_fval;
 
+    printf("  value: %f\n", value);
+}
