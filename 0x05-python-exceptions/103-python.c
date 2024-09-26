@@ -26,9 +26,9 @@ void print_python_list(PyObject *p)
 
     for (i = 0; i < size; i++)
     {
-        item = ((PyListObject *)p)->ob_item[i];
-        printf("Element %zd: %s\n", i, ((PyObject *)(item))->ob_type->tp_name);
-        
+        item = PyList_GetItem(p, i);
+        printf("Element %zd: %s\n", i, item->ob_type->tp_name);
+
         if (PyBytes_Check(item))
             print_python_bytes(item);
         else if (PyFloat_Check(item))
@@ -49,14 +49,15 @@ void print_python_bytes(PyObject *p)
         return;
     }
 
-    size = ((PyVarObject *)p)->ob_size;
-    str = ((PyBytesObject *)p)->ob_sval;
+    size = PyBytes_Size(p);
+    str = PyBytes_AsString(p);
 
     printf("  size: %zd\n", size);
     printf("  trying string: %s\n", str);
 
-    printf("  first %zd bytes:", size > 10 ? 10 : size + 1);
-    for (i = 0; i < (size > 10 ? 10 : size + 1); i++)
+    /* Adjust printing of the first N bytes */
+    printf("  first %zd bytes:", size > 10 ? 10 : size);
+    for (i = 0; i < (size > 10 ? 10 : size); i++)
     {
         printf(" %02x", (unsigned char)str[i]);
     }
@@ -75,7 +76,8 @@ void print_python_float(PyObject *p)
         return;
     }
 
-    value = ((PyFloatObject *)p)->ob_fval;
+    value = PyFloat_AsDouble(p);
 
-    printf("  value: %f\n", value);
+    /* Adjust float precision */
+    printf("  value: %.16g\n", value);
 }
