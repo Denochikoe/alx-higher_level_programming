@@ -1,57 +1,83 @@
+#include <Python.h>
 #include <stdio.h>
-#include <Python.h>  // Ensure you have Python.h included
 
-void print_python_float(PyObject *p);
 void print_python_list(PyObject *p);
 void print_python_bytes(PyObject *p);
+void print_python_float(PyObject *p);
 
-void print_python_float(PyObject *p) {
-    if (PyFloat_Check(p)) {
-        double value = PyFloat_AsDouble(p);
-        printf("[.] float object info\n");
-        printf("  value: %.12g\n", value);  // Print float with precision
-    } else {
-        printf("[ERROR] Invalid Float Object\n");
+void print_python_list(PyObject *p)
+{
+    Py_ssize_t size, allocated, i;
+    PyObject *item;
+
+    printf("[*] Python list info\n");
+
+    if (!PyList_Check(p))
+    {
+        printf("  [ERROR] Invalid List Object\n");
+        return;
+    }
+
+    size = ((PyVarObject *)p)->ob_size; // Size of the list
+    allocated = ((PyListObject *)p)->allocated; // Allocated size
+
+    printf("[*] Size of the Python List = %zd\n", size);
+    printf("[*] Allocated = %zd\n", allocated);
+
+    for (i = 0; i < size; i++)
+    {
+        item = PyList_GetItem(p, i); // Get the item safely
+        printf("Element %zd: %s\n", i, Py_TYPE(item)->tp_name); // Get the type name
+
+        if (PyBytes_Check(item))
+            print_python_bytes(item);
+        else if (PyFloat_Check(item))
+            print_python_float(item);
+        else
+            printf("Element %zd: [ERROR] Unsupported type\n", i);
     }
 }
 
-void print_python_list(PyObject *p) {
-    if (PyList_Check(p)) {
-        Py_ssize_t size = PyList_Size(p);
-        printf("[*] Python list info\n");
-        printf("[*] Size of the Python List = %zd\n", size);
-        printf("[*] Allocated = %zd\n", size);  // Assuming allocated is equal to size
+void print_python_bytes(PyObject *p)
+{
+    Py_ssize_t size, i;
+    char *str;
 
-        for (Py_ssize_t i = 0; i < size; i++) {
-            PyObject *item = PyList_GetItem(p, i);
-            if (PyFloat_Check(item)) {
-                printf("Element %zd: float\n", i);
-                print_python_float(item);  // Call the function to print each float
-            } else if (PyBytes_Check(item)) {
-                printf("Element %zd: bytes\n", i);
-                print_python_bytes(item);  // Call function to print bytes
-            } else {
-                printf("Element %zd: [ERROR] Invalid Type\n", i);
-            }
-        }
-    } else {
-        printf("[ERROR] Invalid List Object\n");
+    printf("[.] bytes object info\n");
+
+    if (!PyBytes_Check(p))
+    {
+        printf("  [ERROR] Invalid Bytes Object\n");
+        return;
     }
+
+    size = PyBytes_Size(p); // Get size of the bytes object
+    str = PyBytes_AsString(p); // Get the string representation
+
+    printf("  size: %zd\n", size);
+    printf("  trying string: %s\n", str ? str : "(null)");
+
+    printf("  first %zd bytes:", size > 10 ? 10 : size);
+    for (i = 0; i < (size > 10 ? 10 : size); i++)
+    {
+        printf(" %02x", (unsigned char)str[i]);
+    }
+    printf("\n");
 }
 
-void print_python_bytes(PyObject *p) {
-    if (PyBytes_Check(p)) {
-        Py_ssize_t size = PyBytes_Size(p);
-        printf("[.] bytes object info\n");
-        printf("  size: %zd\n", size);
-        printf("  trying string: %s\n", PyBytes_AsString(p));
+void print_python_float(PyObject *p)
+{
+    double value;
 
-        printf("  first %zd bytes:", size < 10 ? size : 10);
-        for (Py_ssize_t i = 0; i < (size < 10 ? size : 10); i++) {
-            printf(" %02x", (unsigned char)PyBytes_AsString(p)[i]);
-        }
-        printf("\n");
-    } else {
-        printf("[ERROR] Invalid Bytes Object\n");
+    printf("[.] float object info\n");
+
+    if (!PyFloat_Check(p))
+    {
+        printf("  [ERROR] Invalid Float Object\n");
+        return;
     }
+
+    value = PyFloat_AsDouble(p); // Get the double value from the float object
+    printf("  value: %.12g\n", value); // Print with precision
 }
+
