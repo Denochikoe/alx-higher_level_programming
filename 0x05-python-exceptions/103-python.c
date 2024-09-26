@@ -22,10 +22,10 @@ void print_python_bytes(PyObject *p)
 
     /* Cast PyObject to PyBytesObject to access byte array */
     bytes = (PyBytesObject *)p;
-
+    
     /* Get the size of the byte string */
     size = ((PyVarObject *)p)->ob_size;
-
+    
     /* Get the pointer to the byte array */
     str = bytes->ob_sval;
 
@@ -70,11 +70,11 @@ void print_python_float(PyObject *p)
     /* Get the value of the float */
     value = ((PyFloatObject *)p)->ob_fval;
 
-    /* Print the float value with appropriate formatting */
+    /* Print the float value with the necessary precision */
     if (value == (int)value)
         printf("  value: %.1f\n", value);  /* Ensure decimal point for integer-like floats */
     else
-        printf("  value: %.16g\n", value); /* Use up to 16 significant digits for non-integer floats */
+        printf("  value: %.16g\n", value); /* Use 16 significant digits for non-integer floats */
 }
 
 /**
@@ -116,6 +116,6 @@ void print_python_list(PyObject *p)
         else if (PyFloat_Check(item))
             print_python_float(item);
         else
-            printf("  [ERROR] Unsupported type\n"); // Handle unsupported types
+            printf("  [ERROR] Unsupported type: %s\n", item->ob_type->tp_name);
     }
 }
