@@ -13,8 +13,8 @@ void print_python_list(PyObject *p) {
     }
 
     // Manually access the size and allocated space of the list
-    size = ((PyVarObject *)p)->ob_size;  // Equivalent to PyList_Size(p)
-    allocated = ((PyListObject *)p)->allocated;
+    size = ((PyVarObject *)(p))->ob_size;  // Manual access to size
+    allocated = ((PyListObject *)(p))->allocated;  // Manual access to allocated memory
 
     printf("[*] Python list info\n");
     printf("[*] Size of the Python List = %zd\n", size);
@@ -22,8 +22,8 @@ void print_python_list(PyObject *p) {
 
     // Iterate through the list and print the type of each element
     for (i = 0; i < size; i++) {
-        item = ((PyListObject *)p)->ob_item[i];  // Access the list elements directly
-        printf("Element %zd: %s\n", i, item->ob_type->tp_name);  // Print the type of each element
+        item = ((PyListObject *)(p))->ob_item[i];  // Access list element directly
+        printf("Element %zd: %s\n", i, Py_TYPE(item)->tp_name);  // Print the type of each element
     }
 }
 
@@ -39,8 +39,9 @@ void print_python_bytes(PyObject *p) {
         return;
     }
 
-    size = ((PyVarObject *)p)->ob_size;  // Access the size of the bytes object
-    string = ((PyBytesObject *)p)->ob_sval;  // Access the raw byte string
+    // Manual access to the size and string content of the bytes object
+    size = ((PyVarObject *)(p))->ob_size;
+    string = ((PyBytesObject *)(p))->ob_sval;
 
     printf("[*] Python bytes info\n");
     printf("[*] Size: %zd\n", size);
@@ -65,7 +66,8 @@ void print_python_float(PyObject *p) {
         return;
     }
 
-    value = ((PyFloatObject *)p)->ob_fval;  // Access the float value directly
+    // Manually access the float value directly from the object
+    value = ((PyFloatObject *)(p))->ob_fval;
     printf("[*] Python float info\n");
     printf("[*] Value: %f\n", value);
 }
