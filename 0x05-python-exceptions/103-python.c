@@ -23,8 +23,8 @@ void print_python_bytes(PyObject *p)
         return;
     }
 
-    size = PyBytes_Size(p);
-    str = PyBytes_AsString(p);
+    size = (Py_ssize_t)PyObject_Length(p);
+    str = (const char *)PyUnicode_AsUTF8(p);
 
     printf("  size: %zd\n", size);
     printf("  trying string: %s\n", str ? str : "(null)");
@@ -37,7 +37,7 @@ void print_python_bytes(PyObject *p)
     if (size < 10)
         printf("\n");
     else
-        printf("%02x\n", (unsigned char)str[i-1]);
+        printf("%02x\n", (unsigned char)str[i - 1]);
 
     if (size < 10)
     {
@@ -66,9 +66,9 @@ void print_python_list(PyObject *p)
         return;
     }
 
-    size = PyList_Size(p);
+    size = (Py_ssize_t)PyObject_Length(p);
     printf("[*] Size of the Python List = %zd\n", size);
-    printf("[*] Allocated = %zd\n", ((PyListObject *)p)->allocated);
+    printf("[*] Allocated = %zd\n", ((PyListObject *)p)->allocated); // Avoiding PyList_GetItem
 
     for (i = 0; i < size; i++)
     {
@@ -79,6 +79,11 @@ void print_python_list(PyObject *p)
         {
             printf("float\n");
             print_python_float(item);
+        }
+        else if (PyBytes_Check(item))
+        {
+            printf("bytes\n");
+            print_python_bytes(item);
         }
         else
         {
