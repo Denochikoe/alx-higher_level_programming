@@ -2,61 +2,13 @@
 #include <stdio.h>
 
 /**
- * print_python_bytes - Prints information about a Python bytes object
- * @p: PyObject (expected to be a bytes object)
- */
-void print_python_bytes(PyObject *p)
-{
-    Py_ssize_t size, i;
-    char *str;
-    PyBytesObject *bytes;
-
-    printf("[.] bytes object info\n");
-
-    /* Check if the object is a valid bytes object */
-    if (!PyBytes_Check(p))
-    {
-        printf("  [ERROR] Invalid Bytes Object\n");
-        return;
-    }
-
-    /* Cast PyObject to PyBytesObject to access byte array */
-    bytes = (PyBytesObject *)p;
-    
-    /* Get the size of the byte string */
-    size = ((PyVarObject *)p)->ob_size;
-    
-    /* Get the pointer to the byte array */
-    str = bytes->ob_sval;
-
-    printf("  size: %zd\n", size);
-    printf("  trying string: %s\n", str);
-
-    /* Print the first 10 bytes or fewer */
-    printf("  first %zd bytes:", size >= 10 ? 10 : size);
-
-    /* Print up to the first 9 bytes if available */
-    for (i = 0; i < size && i < 10; i++)
-    {
-        printf(" %02x", (unsigned char)str[i]);
-    }
-
-    /* If there are fewer than 10 bytes, print an extra null byte (0x00) */
-    if (size < 10)
-    {
-        printf(" 00");
-    }
-
-    printf("\n");
-}
-
-/**
  * print_python_float - Prints information about a Python float object
  * @p: PyObject (expected to be a float object)
  */
 void print_python_float(PyObject *p)
 {
     double value;
+    char buffer[64];
 
     printf("[.] float object info\n");
 
@@ -70,11 +22,15 @@ void print_python_float(PyObject *p)
     /* Get the value of the float */
     value = ((PyFloatObject *)p)->ob_fval;
 
-    /* Print the float value with the necessary precision */
-    if (value == (int)value)
-        printf("  value: %.1f\n", value);  /* Ensure decimal point for integer-like floats */
-    else
-        printf("  value: %.16g\n", value); /* Use 16 significant digits for non-integer floats */
+    /* Print the float value */
+    snprintf(buffer, sizeof(buffer), "%.15g", value);
+
+    // Check if the value is an integer
+    if (value == (int)value) {
+        printf("  value: %.1f\n", value);  // Show .0 for integers
+    } else {
+        printf("  value: %s\n", buffer);
+    }
 }
 
 /**
@@ -85,9 +41,8 @@ void print_python_list(PyObject *p)
 {
     Py_ssize_t size, i;
     PyObject *item;
-    PyListObject *list;
 
-    printf("[*] Python list info\n");
+    printf("[.] list object info\n");
 
     /* Check if the object is a valid list object */
     if (!PyList_Check(p))
@@ -96,26 +51,48 @@ void print_python_list(PyObject *p)
         return;
     }
 
-    /* Get the size of the list */
-    size = ((PyVarObject *)p)->ob_size;
+    size = PyList_Size(p);
+    printf("  size: %zd\n", size);
+    printf("  allocated: %zd\n", ((PyListObject *)p)->allocated);
 
-    /* Get the allocated size of the list */
-    list = (PyListObject *)p;
-    printf("[*] Size of the Python List = %zd\n", size);
-    printf("[*] Allocated = %zd\n", list->allocated);
-
-    /* Iterate through the list and print type information */
     for (i = 0; i < size; i++)
     {
-        item = list->ob_item[i];
-        printf("Element %zd: %s\n", i, item->ob_type->tp_name);
-
-        /* Call appropriate function for specific types */
-        if (PyBytes_Check(item))
-            print_python_bytes(item);
-        else if (PyFloat_Check(item))
-            print_python_float(item);
-        else
-            printf("  [ERROR] Unsupported type: %s\n", item->ob_type->tp_name);
+        item = PyList_GetItem(p, i);  // Borrowed reference
+        printf("  Element %zd: ", i);
+        PyObject_Print(item, stdout, 0);  // Print the item
+        printf("\n");
     }
+}
+
+/**
+ * print_python_bytes - Prints information about a Python bytes object
+ * @p: PyObject (expected to be a bytes object)
+ */
+void print_python_bytes(PyObject *p)
+{
+    Py_ssize_t size;
+    char *buffer;
+
+    printf("[.] bytes object info\n");
+
+    /* Check if the object is a valid bytes object */
+    if (!PyBytes_Check(p))
+    {
+        printf("  [ERROR] Invalid Bytes Object\n");
+        return;
+    }
+
+    size = PyBytes_Size(p);
+    buffer = PyBytes_AsString(p);
+
+    printf("  size: %zd\n", size);
+    printf("  value: ");
+    
+    // Print bytes as characters
+    for (Py_ssize_t i = 0; i < size; i++)
+    {
+        // Print the bytes as characters or their integer values
+        printf("%02x ", (unsigned char)buffer[i]);
+    }
+    printf("\n");
 }
